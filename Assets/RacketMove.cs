@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class RacketMove : MonoBehaviour {
-	public float speed = 15;
+	public float speed;
 
 
 	// Update is called once per frame
