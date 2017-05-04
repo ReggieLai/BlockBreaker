@@ -4,5 +4,5 @@ using UnityEngine;
 
 public interface Observer {
 
-	void update(string msg);
+	void update(bool msg);
 }

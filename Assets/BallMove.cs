@@ -5,13 +5,15 @@ using UnityEngine;
 
 public class BallMove : Observable {
 	public float speed;
-	private int ballStarted = 0;
+	private bool ballStarted;
 	public float force;
 	private float maxSpeed = 200f;
-	private string hitFloor = "Ball hit floor.";
+	private bool hitFloor;
 	private GameManager gameManager;
 
 	void Start() {
+		ballStarted = false;
+		hitFloor = false;
 		observers = new List<Observer> ();
 		gameManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager>();
 		addObserver (gameManager);
@@ -23,9 +25,9 @@ public class BallMove : Observable {
 	// just started, otherwise pressing the spacebar key has no effect.
 	void FixedUpdate ()
 	{
-		if (Input.GetKeyDown (KeyCode.Space) && (ballStarted == 0)) {
+		if (Input.GetKeyDown (KeyCode.Space) && (ballStarted == false)) {
 			this.GetComponent<Rigidbody2D> ().AddForce (this.transform.up * 1.5f);
-			ballStarted = ballStarted + 1;
+			ballStarted = true;
 		}
 
 		if (this.GetComponent<Rigidbody2D> ().velocity.magnitude > maxSpeed) {
@@ -48,8 +50,19 @@ public class BallMove : Observable {
 		}
 
 		if (coll.gameObject.name == "bottom_wall") {
+			stopBall ();
+			hitFloor = true;
 			notifyObservers ();
 		}
+	}
+
+	// Ball stops moving.
+	public void stopBall() {
+		GetComponent<Rigidbody2D> ().velocity = Vector2.zero;
+	}
+
+	public void resetBallState() {
+		ballStarted = false;
 	}
 
 
