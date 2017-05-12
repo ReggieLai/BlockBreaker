@@ -3,21 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class BallMove : Observable {
+public class BallMove : MonoBehaviour, Observer {
 	public float speed;
 	private bool ballStarted;
 	public float force;
 	private float maxSpeed = 200f;
-	private bool hitFloor;
-	private GameManager gameManager;
 
 	void Start() {
 		ballStarted = false;
-		hitFloor = false;
-		observers = new List<Observer> ();
-		gameManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager>();
-		addObserver (gameManager);
-
 	}
 
 
@@ -28,16 +21,18 @@ public class BallMove : Observable {
 		if (Input.GetKeyDown (KeyCode.Space) && (ballStarted == false)) {
 			this.GetComponent<Rigidbody2D> ().AddForce (this.transform.up * 1.5f);
 			ballStarted = true;
+			Debug.Log ("ball state is true");
 		}
 
 		if (this.GetComponent<Rigidbody2D> ().velocity.magnitude > maxSpeed) {
 			this.GetComponent<Rigidbody2D> ().velocity = this.GetComponent<Rigidbody2D> ().velocity.normalized * maxSpeed;
 		}
 			
+			
 	}
 
 	// Ball moves left if it hits the left-side of the racket, moves right if it hits the
-	// right-side of the racket.
+	// right-side of the racket. Brick disappears if collided with ball. 
 	void OnCollisionEnter2D (Collision2D coll) {
 		if (coll.gameObject.name == "leftRacket") {
 			Vector2 dir = new Vector2(-1f, 0.5f) * Time.deltaTime * force;
@@ -49,11 +44,10 @@ public class BallMove : Observable {
 			this.GetComponent<Rigidbody2D>().AddForce(dir);
 		}
 
-		if (coll.gameObject.name == "bottom_wall") {
-			stopBall ();
-			hitFloor = true;
-			notifyObservers ();
+		if (coll.gameObject.tag == "brick") {
+			coll.gameObject.SetActive (false);
 		}
+			
 	}
 
 	// Ball stops moving.
@@ -65,12 +59,15 @@ public class BallMove : Observable {
 		ballStarted = false;
 	}
 
+	public bool ballMoving() {
+		return ballStarted;
+	}
 
-	public override void notifyObservers () {
-		foreach (Observer o in observers) {
-			o.update (hitFloor);
+	public void update(bool hitFloor) {
+		if (hitFloor) {
+			stopBall ();
 		}
-		
+
 	}
 		
 }

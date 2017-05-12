@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour, Observer {
 	private static BallMove ball;
 	private Vector2 ballInitialPos;
+	private Transform bar;
 	private static RacketMove leftRacket;
 	private static RacketMove middleRacket;
 	private static RacketMove rightRacket;
@@ -15,7 +16,7 @@ public class GameManager : MonoBehaviour, Observer {
 	private static GameObject ballRestartPanel;
 	private static Text statusText;
 	private int lives;
-	private bool hitFloorEvent;
+	private static bool hitFloorEvent;
 	private bool gameOverEvent;
 
 
@@ -29,6 +30,7 @@ public class GameManager : MonoBehaviour, Observer {
 		leftRacketInitialPos = leftRacket.transform.position;
 		middleRacketInitialPos = middleRacket.transform.position;
 		rightRacketInitialPos = rightRacket.transform.position;
+		bar = GameObject.Find ("middleRacket").transform;
 	
 		ballRestartPanel = GameObject.Find ("Panel");
 		ballRestartPanel.SetActive (false);
@@ -40,13 +42,18 @@ public class GameManager : MonoBehaviour, Observer {
 
 	}
 	
-	// Update is called once per frame
+	// Checks if game is over and call to reset the ball when the game starts again.
 	void Update () {
 		checkGameOver ();
 
 		if (hitFloorEvent && Input.GetKeyDown(KeyCode.Space))
 			resetBall ();
 
+		if (ball.ballMoving().Equals (false)) {
+			ball.transform.position = new Vector2 (bar.position.x, ball.transform.position.y);
+
+		}
+			
 		
 	}
 
@@ -57,15 +64,22 @@ public class GameManager : MonoBehaviour, Observer {
 		}
 	}
 
+	// Re-positions ball and racket to center of screen. 
 	void resetBall() {
 		ball.transform.position = ballInitialPos;
 		leftRacket.transform.position = leftRacketInitialPos;
 		middleRacket.transform.position = middleRacketInitialPos;
 		rightRacket.transform.position = rightRacketInitialPos;
+		hitFloorEvent = false;
 
 		ball.resetBallState ();
 		ballRestartPanel.SetActive (false);
 
+	}
+
+	// Returns if ball has touched the floor.
+	public bool hitFloor() {
+		return hitFloorEvent;
 	}
 
 
