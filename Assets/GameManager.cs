@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour, Observer {
 	private Vector2 middleRacketInitialPos;
 	private Vector2 rightRacketInitialPos;
 	private static GameObject ballRestartPanel;
+	private static GameObject gameOverPanel;
 	private static Text statusText;
 	private int lives;
 	private static bool hitFloorEvent;
@@ -34,6 +35,10 @@ public class GameManager : MonoBehaviour, Observer {
 	
 		ballRestartPanel = GameObject.Find ("Panel");
 		ballRestartPanel.SetActive (false);
+
+		gameOverPanel = GameObject.Find ("GameOver Panel");
+		gameOverPanel.SetActive (false);
+
 		statusText = GetComponent<Text> ();
 		lives = 3;
 
@@ -42,30 +47,48 @@ public class GameManager : MonoBehaviour, Observer {
 
 	}
 	
-	// Checks if game is over and call to reset the ball when the game starts again.
+	// Checks if game is over and call to reset the ball and racket when the game starts again.
 	void Update () {
-		checkGameOver ();
 
 		if (hitFloorEvent && Input.GetKeyDown(KeyCode.Space))
-			resetBall ();
+        {
+            resetBall();
+            resetRacket();
+        }
+			
 
 		if (ball.ballMoving().Equals (false)) {
 			ball.transform.position = new Vector2 (bar.position.x, ball.transform.position.y);
 
 		}
+
+        gameOver();
 			
 		
 	}
 
 	// Checks if the number of lives is 0.
-	void checkGameOver() {
-		if (lives == 0) {
-			//update("Game Over!");
-		}
+	void gameOver() {
+        GameObject[] bricks = GameObject.FindGameObjectsWithTag("brick");
+        if (bricks.Length == 0)
+        {
+            ball.stopBall();
+            leftRacket.stopRacket();
+            middleRacket.stopRacket();
+            rightRacket.stopRacket();
+            ScoreManager scoreManager = GameObject.FindGameObjectWithTag("ScoreManager").GetComponent<ScoreManager> ();
+            scoreManager.setPause();
+            
+
+            
+        }
 	}
 
-	// Re-positions ball and racket to center of screen. 
-	void resetBall() {
+
+
+
+    // Re-positions ball and racket to center of screen. 
+    void resetBall() {
 		ball.transform.position = ballInitialPos;
 		leftRacket.transform.position = leftRacketInitialPos;
 		middleRacket.transform.position = middleRacketInitialPos;
@@ -77,6 +100,13 @@ public class GameManager : MonoBehaviour, Observer {
 
 	}
 
+    void resetRacket()
+    {
+        leftRacket.resetRacket();
+        middleRacket.resetRacket();
+        rightRacket.resetRacket();
+    }
+
 	// Returns if ball has touched the floor.
 	public bool hitFloor() {
 		return hitFloorEvent;
@@ -85,11 +115,16 @@ public class GameManager : MonoBehaviour, Observer {
 
 	public void update(bool hitFloor) {
 		if (hitFloor) {
-			if (lives >= 1) {
-				lives = lives - 1;
-				statusText.text = "Lives: " + lives;
+			if (lives > 1) {
+				
 				ballRestartPanel.SetActive (true);
+			} else {
+				gameOverPanel.SetActive (true);
+                
 			}
+
+			lives = lives - 1;
+			statusText.text = "Lives: " + lives;
 			hitFloorEvent = true;
 				
 		}

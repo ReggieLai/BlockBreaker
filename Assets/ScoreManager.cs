@@ -23,17 +23,22 @@ public class ScoreManager : MonoBehaviour, Observer {
 	void Update () {
 		if (!gamePaused.Equals(true) && ball.ballMoving()) {
 			time += Time.deltaTime;
-			scoreText.text = "Score: " + time;
+			scoreText.text = "Time: " + time;
 		}
 			
 
 		if (gameManager.hitFloor () && Input.GetKeyDown (KeyCode.Space)) {
 			gamePaused = false;
 			time += Time.deltaTime;
-			scoreText.text = "Score: " + time;
+			scoreText.text = "Time: " + time;
 		}
 			
 	}
+
+    public void setPause()
+    {
+        gamePaused = true;
+    }
 
 	public void update(bool hitFloor) {
 		if (hitFloor) {

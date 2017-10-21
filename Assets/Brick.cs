@@ -6,7 +6,7 @@ public class Brick : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		initializeColour ();
+		//initializeColour ();
 	}
 
 	// Randomize brick colour. 
