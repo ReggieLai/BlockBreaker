@@ -11,8 +11,8 @@ public class FloorScript : Observable {
 	private ScoreManager scoreManager;
 	private bool hitFloor;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    new void Start () {
 		observers = new List<Observer> ();
 		gameManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameManager>();
 		ball = GameObject.FindGameObjectWithTag("ball").GetComponent<BallMove>();

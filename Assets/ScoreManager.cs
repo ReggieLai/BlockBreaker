@@ -40,6 +40,11 @@ public class ScoreManager : MonoBehaviour, Observer {
         gamePaused = true;
     }
 
+    public float getTime()
+    {
+        return time;
+    }
+
 	public void update(bool hitFloor) {
 		if (hitFloor) {
 			gamePaused = true;

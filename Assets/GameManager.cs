@@ -15,6 +15,7 @@ public class GameManager : MonoBehaviour, Observer {
 	private Vector2 rightRacketInitialPos;
 	private static GameObject ballRestartPanel;
 	private static GameObject gameOverPanel;
+    private static GameObject winPanel;
 	private static Text statusText;
 	private int lives;
 	private static bool hitFloorEvent;
@@ -33,13 +34,16 @@ public class GameManager : MonoBehaviour, Observer {
 		rightRacketInitialPos = rightRacket.transform.position;
 		bar = GameObject.Find ("middleRacket").transform;
 	
-		ballRestartPanel = GameObject.Find ("Panel");
+		ballRestartPanel = GameObject.Find ("RestartPanel");
 		ballRestartPanel.SetActive (false);
 
-		gameOverPanel = GameObject.Find ("GameOver Panel");
+		gameOverPanel = GameObject.Find ("GameOverPanel");
 		gameOverPanel.SetActive (false);
 
-		statusText = GetComponent<Text> ();
+        winPanel = GameObject.Find("WinPanel");
+        winPanel.SetActive(false);
+
+        statusText = GetComponent<Text> ();
 		lives = 3;
 
 		hitFloorEvent = false;
@@ -62,13 +66,13 @@ public class GameManager : MonoBehaviour, Observer {
 
 		}
 
-        gameOver();
+        maybeWin();
 			
 		
 	}
 
-	// Checks if the number of lives is 0.
-	void gameOver() {
+	// Checks if the number of bricks is 0.
+	void maybeWin() {
         GameObject[] bricks = GameObject.FindGameObjectsWithTag("brick");
         if (bricks.Length == 0)
         {
@@ -78,9 +82,10 @@ public class GameManager : MonoBehaviour, Observer {
             rightRacket.stopRacket();
             ScoreManager scoreManager = GameObject.FindGameObjectWithTag("ScoreManager").GetComponent<ScoreManager> ();
             scoreManager.setPause();
-            
 
-            
+            Text text = winPanel.GetComponentInChildren<Text>();
+            text.text = "Congratulations! You beat this level in " + scoreManager.getTime().ToString() + " seconds.";
+            winPanel.SetActive(true);
         }
 	}
 
@@ -116,8 +121,12 @@ public class GameManager : MonoBehaviour, Observer {
 	public void update(bool hitFloor) {
 		if (hitFloor) {
 			if (lives > 1) {
-				
+                if (ballRestartPanel != null)
+                {
+                    print("restart panel not null");
+                }
 				ballRestartPanel.SetActive (true);
+                print("game manager set restart panel true");
 			} else {
 				gameOverPanel.SetActive (true);
                 
